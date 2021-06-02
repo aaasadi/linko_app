@@ -1,5 +1,6 @@
 <template>
-  <v-list class="listGroup">
+  <v-list v-show="status && show" class="listGroup">
+    <v-subheader>Select one of the Groups</v-subheader>
     <v-list-item-group>
       <v-list-item
         v-for="(group, index) in items.filter(
@@ -22,6 +23,21 @@
 
 <script>
 export default {
-  props: ['items', 'value', 'setGroupHandler'],
+  props: ['status', 'items', 'value', 'setGroupHandler'],
+  data() {
+    return {
+      show: false,
+    }
+  },
+  mounted() {
+    this.$root.$on('groupList', (status) => (this.show = status))
+  },
 }
 </script>
+
+<style scoped>
+.listGroup {
+  margin-top: 1rem;
+  background-color: #f7f7f7;
+}
+</style>

@@ -1,25 +1,28 @@
 <template>
   <v-form @submit.prevent="submit" class="form">
+    <!-- SHOW LINK AFTER SET -->
     <show-link
-      :status="status === 'GET_URL'"
+      v-if="status === 'GET_URL'"
       :link="getSlug"
       :editHandler="editLink"
     />
+    <!-- INPUT SET GROUP, LINK AND URL -->
     <v-text-field
-      :value="input"
-      @input="setInput"
       ref="creator"
+      @input="setInput"
+      @focus="showGroupsList(true)"
+      :value="input"
+      :error-messages="errors"
       :placeholder="placeholder"
       :prefix="prefix"
+      :loading="loading"
       hide-details="auto"
       color="primary"
       outlined
-      :error-messages="errors"
-      @focus="focus = true"
     >
+      <!-- SUBMIT BUTTON -->
       <template #append>
         <v-btn
-          v-on="on"
           small
           color="primary"
           type="submit"
@@ -29,8 +32,9 @@
         </v-btn>
       </template>
     </v-text-field>
+    <!-- LIST OF GROUPS OF USER -->
     <list-group
-      v-show="status === 'GET_GROUP' && focus"
+      :status="status === 'GET_GROUP'"
       :items="items"
       :value="input"
       :setGroupHandler="setGroup"
@@ -45,127 +49,160 @@ export default {
   components: { ShowLink, ListGroup },
   data() {
     return {
-      input: '',
-      errors: [],
-      items: [],
-      focus: false,
-      status: 'GET_GROUP',
+      input: '', // text of input
+      errors: [], // error validation
+      items: [], // list of groups
+      status: 'GET_GROUP', // status input | option: GET_GROUP, GET_LINK or GET_URL
+      loading: false, // load information status
       data: {
-        group: null,
-        link: null,
-        url: null,
+        group: '', // example: social
+        link: '', // example: instagram
+        url: '', // example: https://www.instagram.com/linko
       },
     }
   },
   computed: {
+    // set placeholder input
     placeholder() {
       return this.status === 'GET_URL'
         ? 'https://www.example.com'
         : 'Group/Link'
     },
+    // set prefix input
     prefix() {
-      return this.status === 'GET_URL' ? 'URL' : 'https://linko.io/'
+      return this.status === 'GET_URL' ? 'Your URL' : 'https://linko.io/'
     },
+    // set text submit button
     textSubmitButton() {
       return this.status === 'GET_URL' ? 'create' : 'check'
     },
+    // set slug. example: /group/link
     getSlug() {
       return `${this.data.group}/${this.data.link}`
     },
   },
   methods: {
-    setInput(value) {
-      this.input = value.toLowerCase()
-      if (this.status !== 'GET_URL') {
-        if (value.indexOf('/') > -1) {
+    // open/close the group list
+    showGroupsList(status) {
+      this.$root.$emit('groupList', status)
+    },
+    // set status GET_GROUP, GET_LINK or GET_URL
+    setStatus() {
+      const { status, input } = this
+      if (status !== 'GET_URL') {
+        if (input.indexOf('/') > -1) {
           this.status = 'GET_LINK'
         } else {
           this.status = 'GET_GROUP'
         }
       }
-      switch (this.status) {
+    },
+    // set group, link and url
+    setData(value) {
+      const { status, data } = this
+      switch (status) {
         case 'GET_URL':
-          this.data.url = value
+          data.url = value
           break
         case 'GET_LINK':
-          this.data.link = value.split('/')[1]
+          data.link = value.split('/')[1]
           break
         case 'GET_GROUP':
-          this.data.group = value
+          data.group = value
           break
       }
+    },
+    // set text of input
+    setInput(value) {
+      this.showGroupsList(value.length > 0)
+      this.input = value = value.toLowerCase()
+      this.setStatus()
+      this.setData(value)
       this.validation()
     },
+    // set group by list
     setGroup(group) {
       this.data.group = group
       this.input = `${group}/`
       this.status = 'GET_LINK'
       this.$refs.creator.focus()
+      this.validation()
     },
+    // edit group and link
     editLink() {
+      this.errors = []
       this.status = 'GET_LINK'
       this.input = this.getSlug
       this.$refs.creator.focus()
     },
-    validation(submit = false) {
+    // validation data
+    validation(option = { submit: false }) {
+      const { input, items, data, status } = this
+      const { submit } = option
       this.errors = []
-      if (!this.data.group && this.status === 'GET_GROUP' && submit) {
-        this.errors.push('group is empty')
+      if (items.indexOf(data.group) === -1 && input !== data.group) {
+        this.errors.push('The group has not been registered')
       }
-      if (
-        this.items.indexOf(this.data.group) === -1 &&
-        this.status === 'GET_LINK'
-      ) {
-        this.errors.push('domain is not registerd')
+      if (input.split('/').length > 2 && status === 'GET_LINK') {
+        this.errors.push('The link entered is incorrect')
       }
-      if (this.input.split('/').length > 2 && this.status === 'GET_LINK') {
-        this.errors.push('address is false')
+      if (!data.link && submit) {
+        this.errors.push('The link entered is incorrect')
       }
-      if (!this.data.link && this.status === 'GET_LINK' && submit) {
-        this.errors.push('link is empty')
+      if (!data.url && submit && status === 'GET_URL') {
+        this.errors.push('The URL address could not be empty')
       }
+      return this.errors.length === 0
     },
+    // check group and link by API
     async checkLink() {
+      this.loading = true
       const link = this.getSlug
-      const result = await this.$axios.$post('/links/check', { link })
-      if (result) {
-        this.status = 'GET_URL'
-        this.input = null
-      } else {
-        this.errors.push('link is already')
+      try {
+        const result = await this.$axios.$post('/links/check', { link })
+        this.loading = false
+        if (result) {
+          this.status = 'GET_URL'
+          this.input = ''
+        } else {
+          this.errors.push('The link is already registered')
+        }
+      } catch (error) {
+        this.errors.push('Server Error')
       }
     },
+    // create link function
     async createLink() {
-      const slug = this.data.link
-      const url = this.data.url
-      await this.$axios.$post(`/links/${this.data.group}`, { slug, url })
+      const { group, link, url } = this.data
+      try {
+        const result = await this.$axios.$post(`/links/${group}`, {
+          slug: link,
+          url,
+        })
+        if (result) this.input = ''
+      } catch (error) {
+        this.errors.push('The address entered is incorrect')
+      }
     },
+    // submit input function
     async submit() {
-      this.validation(true)
-      if (this.errors.length === 0) {
-        switch (this.status) {
-          case 'GET_URL':
-            await this.createLink()
-            this.input = ''
+      const { status } = this
+      if (this.validation({ submit: true })) {
+        switch (status) {
           case 'GET_LINK':
             await this.checkLink()
+            break
+          case 'GET_URL':
+            await this.createLink()
+            break
         }
       }
     },
   },
+  // get list of group and set in items
   async fetch() {
     const result = await this.$axios.$get('/domains')
     this.items = result.map((item) => item.name)
   },
 }
 </script>
-
-<style scoped>
-.form {
-  margin: 50px 0 100px 0;
-}
-.listGroup {
-  margin-top: 1rem;
-  background-color: #f7f7f7;
-}
-</style>

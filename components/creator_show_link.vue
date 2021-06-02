@@ -1,5 +1,5 @@
 <template>
-  <v-row no-gutters align="center" v-if="status" class="mb-2">
+  <v-row no-gutters align="center" class="mb-2">
     <span>
       <b>link:</b>
       <span :style="{ color: '#999' }"> https://linko.io/ </span>
@@ -12,6 +12,6 @@
 
 <script>
 export default {
-  props: ['status', 'link', 'editHandler'],
+  props: ['link', 'editHandler'],
 }
 </script>
