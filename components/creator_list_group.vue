@@ -3,9 +3,7 @@
     <v-subheader>Select one of the Groups</v-subheader>
     <v-list-item-group>
       <v-list-item
-        v-for="(group, index) in items.filter(
-          (group) => group.indexOf(value) != -1
-        )"
+        v-for="(group, index) in filterItems"
         :key="index"
         @click="setGroupHandler(group)"
       >
@@ -22,12 +20,22 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  props: ['status', 'items', 'value', 'setGroupHandler'],
+  props: ['status', 'value', 'setGroupHandler'],
   data() {
     return {
       show: false,
     }
+  },
+  computed: {
+    filterItems() {
+      return this.items.filter((group) => group.indexOf(this.value) != -1)
+    },
+    ...mapState({
+      items: (state) => state.groups.list.map((item) => item.name),
+    }),
   },
   mounted() {
     this.$root.$on('groupList', (status) => (this.show = status))

@@ -5,32 +5,31 @@
       <Creator class="creator" />
       <h4 class="mb-3">Your links</h4>
       <Domains />
-      <v-row justify="center">
-        <v-col cols="12" md="6" v-for="(link, index) in links" :key="index">
-          <LinkItem :link="link" />
-        </v-col>
-        <v-btn color="primary" text>show more</v-btn>
-      </v-row>
+      <Links />
     </v-col>
     <v-col cols="12" lg="4"> show views </v-col>
   </v-row>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 import Header from '~/components/header.vue'
 import Creator from '~/components/creator.vue'
-import Domains from '~/components/domains.vue'
-import LinkItem from '~/components/linkItem.vue'
-export default {
-  components: { Header, Creator, Domains, LinkItem },
-  data() {
-    return {
-      links: [],
-    }
-  },
+import Domains from '~/components/groups.vue'
+import Links from '~/components/links.vue'
 
+export default {
+  components: { Header, Creator, Domains, Links },
+  methods: {
+    ...mapActions({
+      fetchGroupsData: 'groups/fetchData',
+      fetchLinksData: 'links/fetchData',
+    }),
+  },
   async fetch() {
-    this.links = await this.$axios.$get('/links')
+    this.fetchGroupsData()
+    this.fetchLinksData()
   },
 }
 </script>

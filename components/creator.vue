@@ -15,7 +15,6 @@
       :error-messages="errors"
       :placeholder="placeholder"
       :prefix="prefix"
-      :loading="loading"
       hide-details="auto"
       color="primary"
       outlined
@@ -35,7 +34,6 @@
     <!-- LIST OF GROUPS OF USER -->
     <list-group
       :status="status === 'GET_GROUP'"
-      :items="items"
       :value="input"
       :setGroupHandler="setGroup"
     />
@@ -43,6 +41,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import ShowLink from './creator_show_link'
 import ListGroup from './creator_list_group'
 export default {
@@ -51,9 +50,7 @@ export default {
     return {
       input: '', // text of input
       errors: [], // error validation
-      items: [], // list of groups
       status: 'GET_GROUP', // status input | option: GET_GROUP, GET_LINK or GET_URL
-      loading: false, // load information status
       data: {
         group: '', // example: social
         link: '', // example: instagram
@@ -80,6 +77,9 @@ export default {
     getSlug() {
       return `${this.data.group}/${this.data.link}`
     },
+    ...mapState({
+      items: (state) => state.groups.list.map((item) => item.name),
+    }),
   },
   methods: {
     // open/close the group list
@@ -156,11 +156,9 @@ export default {
     },
     // check group and link by API
     async checkLink() {
-      this.loading = true
       const link = this.getSlug
       try {
         const result = await this.$axios.$post('/links/check', { link })
-        this.loading = false
         if (result) {
           this.status = 'GET_URL'
           this.input = ''
@@ -198,11 +196,6 @@ export default {
         }
       }
     },
-  },
-  // get list of group and set in items
-  async fetch() {
-    const result = await this.$axios.$get('/domains')
-    this.items = result.map((item) => item.name)
   },
 }
 </script>
