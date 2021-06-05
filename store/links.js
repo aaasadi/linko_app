@@ -3,12 +3,21 @@ export const state = () => ({
 })
 
 export const mutations = {
-  getLinks: (state, links) => (state.list = links),
+  setLinks: (state, links) => (state.list = links),
 }
 
 export const actions = {
   async fetchData({ commit }) {
     const data = await this.$axios.$get('/links')
-    commit('getLinks', data)
+    commit('setLinks', data)
+  },
+  async createLink({ dispatch }, data) {
+    const { group, url, link } = data
+    const result = await this.$axios.$post(`/links/${group}`, {
+      slug: link,
+      url,
+    })
+    dispatch('fetchData')
+    return result
   },
 }

@@ -1,6 +1,12 @@
 <template>
-  <v-tabs value="selected" @change="selectGroup" class="mb-3">
-    <v-tab v-for="item in items" :key="item">{{ item }}</v-tab>
+  <v-tabs value="selected" class="mb-3" show-arrows>
+    <v-tab
+      grow
+      v-for="item in sorted"
+      :key="item.name"
+      @click.native="selectGroupByName(item.name)"
+      >{{ item.name }}</v-tab
+    >
   </v-tabs>
 </template>
 
@@ -9,7 +15,21 @@ import { mapState, mapMutations } from 'vuex'
 export default {
   computed: {
     items() {
-      return ['all', ...this.list.map((item) => item.name)]
+      return [
+        ...this.list.map((item) => ({
+          name: item.name,
+          links: item.links.length,
+        })),
+      ]
+    },
+    allLinksNumber() {
+      return this.items.reduce((total, item) => total + item.links, 0)
+    },
+    sorted() {
+      return [
+        { name: 'all', links: this.allLinksNumber },
+        ...this.items.sort((a, b) => b.links - a.links),
+      ]
     },
     ...mapState({
       list: (state) => state.groups.list,
@@ -17,6 +37,9 @@ export default {
     }),
   },
   methods: {
+    selectGroupByName(name) {
+      this.selectGroup(name)
+    },
     ...mapMutations({
       selectGroup: 'groups/selectGroup',
     }),

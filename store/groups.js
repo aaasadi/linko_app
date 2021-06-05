@@ -1,10 +1,10 @@
 export const state = () => ({
   list: [],
-  selected: 0,
+  selected: 'all',
 })
 
 export const mutations = {
-  getGroups(state, list) {
+  setGroups(state, list) {
     state.list = list
   },
   selectGroup(state, index) {
@@ -13,8 +13,14 @@ export const mutations = {
 }
 
 export const actions = {
-  async fetchData({ commit }) {
-    const data = await this.$axios.$get('groups')
-    commit('getGroups', data)
+  async getGroups({ commit }) {
+    const res = await this.$axios.$get('groups')
+    commit('setGroups', res)
+  },
+  async addGroup({ dispatch }, data) {
+    console.log('add group vuex', data)
+    const { name } = data
+    const res = await this.$axios.$post('groups', { name })
+    dispatch('getGroups')
   },
 }

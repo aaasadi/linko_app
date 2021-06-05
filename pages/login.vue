@@ -1,9 +1,9 @@
 <template>
-  <v-flex no-gutters justify="center" align="center">
-    <v-row no-gutters class="my-6" justify="center">
+  <v-flex class="container">
+    <v-row no-gutters class="flex-grow-1" align="center" justify="center">
       <h2>Linko</h2>
     </v-row>
-    <v-form @submit="submit">
+    <v-form @submit="submit" class="flex-grow-0">
       <v-row no-gutters>
         <v-text-field
           v-model="login.email"
@@ -37,7 +37,7 @@
         >
       </v-row>
     </v-form>
-    <v-row class="mt-5" no-gutters justify="center">
+    <v-row class="mt-5 flex-grow-0" no-gutters justify="center">
       <p>create your account <nuxt-link to="/register">Sign in</nuxt-link></p>
     </v-row>
   </v-flex>
@@ -45,6 +45,7 @@
 
 <script>
 export default {
+  layout: 'sample',
   auth: 'guest',
   data() {
     return {
@@ -58,8 +59,18 @@ export default {
     async submit(event) {
       event.preventDefault()
       const result = await this.$auth.loginWith('local', { data: this.login })
-      this.$router.push({ path: '/panel' })
+      this.$router.push({ path: '/' })
     },
   },
 }
 </script>
+
+<style scoped>
+.container {
+  display: flex;
+  width: 95%;
+  max-width: 600px;
+  flex-direction: column;
+  height: 100%;
+}
+</style>

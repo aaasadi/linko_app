@@ -1,26 +1,31 @@
 <template>
-  <v-flex justify="center" align="center">
-    <v-row no-gutters>
-      <h2>Linko</h2>
-      <v-spacer />
-      <div v-if="$auth.loggedIn">
-        <v-btn text to="/panel">Panel</v-btn>
-      </div>
-      <div v-else>
-        <v-btn text to="/login">Login</v-btn>
-        <v-btn text to="/register">Register</v-btn>
-      </div>
-    </v-row>
-  </v-flex>
+  <div>
+    <add-link />
+    <add-group />
+    <groups />
+    <links />
+  </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
+import AddLink from '~/components/addLink.vue'
+import AddGroup from '~/components/addGroup.vue'
+import Groups from '~/components/groups.vue'
+import Links from '~/components/links.vue'
+
 export default {
-  auth: false,
-  methods: {
-    async logout() {
-      await this.$auth.logout()
-    },
-  },
+  components: { AddLink, AddGroup, Groups, Links },
+  // methods: {
+  //   ...mapActions({
+  //     fetchGroupsData: 'groups/getGroups',
+  //     fetchLinksData: 'links/fetchData',
+  //   }),
+  // },
+  // async fetch() {
+  //   this.fetchGroupsData()
+  //   this.fetchLinksData()
+  // },
 }
 </script>

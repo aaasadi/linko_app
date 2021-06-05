@@ -1,6 +1,10 @@
 <template>
   <v-list v-show="status && show" class="listGroup">
-    <v-subheader>Select one of the Groups</v-subheader>
+    <v-row class="mr-4" no-gutters align="center">
+      <v-subheader>Select one of the Groups</v-subheader>
+      <v-spacer />
+      <v-btn icon small @click="closeList"><v-icon>mdi-close</v-icon></v-btn>
+    </v-row>
     <v-list-item-group>
       <v-list-item
         v-for="(group, index) in filterItems"
@@ -10,10 +14,6 @@
         <v-list-item-content>
           <v-list-item-title v-text="group"></v-list-item-title>
         </v-list-item-content>
-      </v-list-item>
-      <v-list-item>
-        <v-icon left>mdi-plus</v-icon>
-        Add new sub link
       </v-list-item>
     </v-list-item-group>
   </v-list>
@@ -36,6 +36,11 @@ export default {
     ...mapState({
       items: (state) => state.groups.list.map((item) => item.name),
     }),
+  },
+  methods: {
+    closeList() {
+      this.$root.$emit('groupList', false)
+    },
   },
   mounted() {
     this.$root.$on('groupList', (status) => (this.show = status))

@@ -1,6 +1,7 @@
 <template>
-  <v-form @submit.prevent="submit" class="form">
+  <v-form @submit.prevent="submit" class="mb-5">
     <!-- SHOW LINK AFTER SET -->
+    <v-subheader>Create new Link</v-subheader>
     <show-link
       v-if="status === 'GET_URL'"
       :link="getSlug"
@@ -20,11 +21,12 @@
       outlined
     >
       <!-- SUBMIT BUTTON -->
-      <template #append>
+      <template v-slot:append>
         <v-btn
           small
           color="primary"
           type="submit"
+          text
           :style="{ marginTop: '-2px' }"
         >
           {{ textSubmitButton }}
@@ -41,9 +43,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
-import ShowLink from './creator_show_link'
-import ListGroup from './creator_list_group'
+import { mapState, mapActions } from 'vuex'
+import ShowLink from './addLink_showLink.vue'
+import ListGroup from './addLink_listGroup.vue'
 export default {
   components: { ShowLink, ListGroup },
   data() {
@@ -171,12 +173,8 @@ export default {
     },
     // create link function
     async createLink() {
-      const { group, link, url } = this.data
       try {
-        const result = await this.$axios.$post(`/links/${group}`, {
-          slug: link,
-          url,
-        })
+        const result = this.addLink(this.data)
         if (result) this.input = ''
       } catch (error) {
         this.errors.push('The address entered is incorrect')
@@ -196,6 +194,9 @@ export default {
         }
       }
     },
+    ...mapActions({
+      addLink: 'links/createLink',
+    }),
   },
 }
 </script>
