@@ -1,6 +1,5 @@
 <template>
   <v-flex>
-    <v-breadcrumbs :items="items" />
     <v-subheader>Add new Group</v-subheader>
     <v-form @submit.prevent="submit">
       <v-text-field v-model="data.name" label="Group Name" outlined>
@@ -67,18 +66,6 @@ export default {
       data: {
         name: '',
       },
-      items: [
-        {
-          text: 'Dashboard',
-          disabled: false,
-          to: '/',
-        },
-        {
-          text: 'Group Manage',
-          disabled: true,
-          to: '/',
-        },
-      ],
     }
   },
   computed: {

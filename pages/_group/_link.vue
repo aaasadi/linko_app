@@ -1,6 +1,5 @@
 <template>
   <v-flex>
-    <v-breadcrumbs :items="items" />
     <update-link :url="link.url" :slug="link.slug" />
     <v-subheader>Link data</v-subheader>
     <v-simple-table>
@@ -54,18 +53,6 @@ export default {
   data() {
     return {
       link: {},
-      items: [
-        {
-          text: 'Dashboard',
-          disabled: false,
-          to: '/',
-        },
-        {
-          text: 'Link',
-          disabled: true,
-          to: '/',
-        },
-      ],
     }
   },
   computed: {
