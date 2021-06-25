@@ -174,8 +174,9 @@ export default {
     // create link function
     async createLink() {
       try {
-        const result = this.addLink(this.data)
-        if (result) this.input = ''
+        await this.addLink(this.data)
+        this.input = ''
+        this.status = 'GET_GROUP'
       } catch (error) {
         this.errors.push('The address entered is incorrect')
       }

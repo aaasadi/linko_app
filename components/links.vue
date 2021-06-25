@@ -23,10 +23,10 @@ export default {
     linksFilter() {
       return this.links.reduce(
         (total, item) => {
-          const { link, url, slug, group } = item
+          const { link, url, slug, group, views } = item
           if (!total[group.name]) total[group.name] = []
-          total['all'].push({ link, url, slug })
-          total[group.name].push({ link, url, slug })
+          total['all'].push({ link, url, slug, views })
+          total[group.name].push({ link, url, slug, views })
           return total
         },
         { all: [] }

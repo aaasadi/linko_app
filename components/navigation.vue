@@ -10,6 +10,9 @@
           :title="item.title"
           :icon="item.icon"
         />
+        <a href="http://localhost:8000/help">
+          <nav-item title="Help" icon="mdi-help" />
+        </a>
         <nav-item @click.native="logout" title="Logout" icon="mdi-power" />
       </v-list-item-group>
     </v-list>
@@ -28,7 +31,6 @@ export default {
         { title: 'Dashboard', to: '/', icon: 'mdi-view-dashboard' },
         { title: 'Groups', to: '/groups', icon: 'mdi-shape' },
         { title: 'Account', to: '/account', icon: 'mdi-account' },
-        { title: 'Help', to: '/help', icon: 'mdi-help' },
       ],
     }
   },

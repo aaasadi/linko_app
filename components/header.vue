@@ -1,6 +1,6 @@
 <template>
   <v-app-bar app flat color="white">
-    <h2>Linko</h2>
+    <logo />
     <v-spacer />
     <v-btn icon><v-icon>mdi-magnify</v-icon></v-btn>
     <div v-if="$vuetify.breakpoint.mdAndDown">
@@ -10,10 +10,10 @@
 </template>
 
 <script>
-import Navigation from '~/components/navigation.vue'
+import Logo from './logo.vue'
 
 export default {
-  components: { Navigation },
+  components: { Logo },
   methods: {
     toggleNav() {
       this.$root.$emit('toggleNavigation')

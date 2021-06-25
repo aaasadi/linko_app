@@ -14,13 +14,29 @@ export const mutations = {
 
 export const actions = {
   async getGroups({ commit }) {
-    const res = await this.$axios.$get('groups')
-    commit('setGroups', res)
+    try {
+      const list = await this.$axios.$get('groups')
+      commit('setGroups', list)
+    } catch (err) {
+      console.log(err)
+      // handle error
+    }
   },
   async addGroup({ dispatch }, data) {
-    console.log('add group vuex', data)
     const { name } = data
-    const res = await this.$axios.$post('groups', { name })
-    dispatch('getGroups')
+    try {
+      await this.$axios.$post('groups', { name })
+      dispatch('getGroups')
+    } catch (err) {
+      // handle err
+    }
+  },
+  async deleteGroup({ dispatch }, name) {
+    try {
+      await this.$axios.$delete(`groups/${name}`)
+      dispatch('getGroups')
+    } catch (err) {
+      // handle err
+    }
   },
 }

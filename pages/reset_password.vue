@@ -4,21 +4,6 @@
       <v-form @submit.prevent="submit" class="flex-grow-0">
         <validation-provider
           v-slot="{ errors }"
-          name="email"
-          rules="required|email"
-        >
-          <v-row no-gutters>
-            <v-text-field
-              v-model="data.email"
-              placeholder="Your Email"
-              label="Email Address"
-              :error-messages="errors"
-              outlined
-            />
-          </v-row>
-        </validation-provider>
-        <validation-provider
-          v-slot="{ errors }"
           name="password"
           rules="required|min:8"
         >
@@ -26,7 +11,7 @@
             <v-text-field
               v-model="data.password"
               placeholder="Your Password"
-              label="Password"
+              label="New password"
               :type="showPass ? 'text' : 'password'"
               :append-icon="showPass ? 'mdi-eye-off' : 'mdi-eye'"
               @click:append="showPass = !showPass"
@@ -37,7 +22,7 @@
         </validation-provider>
         <validation-provider
           v-slot="{ errors }"
-          name="confirm_password"
+          name="confirm"
           rules="required|confirmed:password"
         >
           <v-row no-gutters>
@@ -45,7 +30,7 @@
               v-model="data.confirm_password"
               placeholder="Repeat Password"
               :type="showPass ? 'text' : 'password'"
-              label="Confirm Password"
+              label="Confirm password"
               :error-messages="errors"
               outlined
             />
@@ -60,7 +45,7 @@
             rounded
             color="primary"
             :disabled="invalid"
-            >Register</v-btn
+            >set password</v-btn
           >
         </v-row>
       </v-form>
@@ -72,7 +57,7 @@
 </template>
 
 <script>
-import { required, email, min, confirmed } from 'vee-validate/dist/rules'
+import { required, min, confirmed } from 'vee-validate/dist/rules'
 import {
   extend,
   setInteractionMode,
@@ -84,10 +69,6 @@ setInteractionMode('eager')
 extend('required', {
   ...required,
   message: '{_field_} can not be empty',
-})
-extend('email', {
-  ...email,
-  message: 'Email must be valid',
 })
 extend('min', {
   ...min,
@@ -106,22 +87,33 @@ export default {
     return {
       showPass: false,
       data: {
-        email: '',
         password: '',
         confirm_password: '',
       },
     }
+  },
+  computed: {
+    user_id() {
+      return this.$route.query.id
+    }, // return user_id
+    verify_id() {
+      return this.$route.query.verify_id
+    }, // return verify_id
+  },
+  mounted() {
+    console.log(this.$route.query)
   },
   methods: {
     async submit() {
       const validation = this.$refs.observer.validate()
       if (validation) {
         try {
-          await this.$axios.$post('/user/register', {
-            email: this.data.email,
-            password: this.data.password,
+          await this.$axios.$post('/user/recovery', {
+            user_id: this.user_id,
+            verify_id: this.verify_id,
+            newPassword: this.data.password,
           })
-          this.$router.push({ path: '/send_email' })
+          this.$router.push({ path: '/login' })
         } catch (err) {
           // handle error
         }

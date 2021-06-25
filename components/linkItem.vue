@@ -3,23 +3,30 @@
     <v-card-text class="pb-2">
       <v-row no-gutters>
         <div>
-          <h4 class="title">my Website</h4>
-          <nuxt-link :to="link.slug" class="link"
-            ><span class="address">https://linko.ir/</span
-            >{{ link.slug }}</nuxt-link
+          <h4 class="title">{{ title }}</h4>
+          <a
+            :href="'http://localhost:8000/redirect/' + link.slug"
+            ref="link"
+            class="link"
+            ><span class="address">https://linko.ir/</span>{{ link.slug }}</a
           >
         </div>
         <v-spacer />
-        <v-btn icon ripple>
-          <v-icon>mdi-content-copy</v-icon>
-        </v-btn>
+        <v-tooltip v-model="showCopied" top>
+          <template v-slot:activator="{ attrs }">
+            <v-btn icon ripple @click="copy" v-bind="attrs">
+              <v-icon>mdi-content-copy</v-icon>
+            </v-btn>
+          </template>
+          <span>Copied!</span>
+        </v-tooltip>
       </v-row>
     </v-card-text>
     <v-card-actions class="pa-4 pt-0">
       <v-row no-gutters align="center">
-        <span><v-icon left>mdi-eye</v-icon> 108</span>
+        <span><v-icon left>mdi-eye</v-icon>{{ link.views }} views</span>
         <v-spacer />
-        <v-btn text small color="primary">
+        <v-btn text small color="primary" :to="link.slug">
           More
           <v-icon right>mdi-arrow-right</v-icon>
         </v-btn>
@@ -31,6 +38,24 @@
 <script>
 export default {
   props: ['link'],
+  data() {
+    return {
+      showCopied: false,
+    }
+  },
+  computed: {
+    title() {
+      const title = this.link.slug.split('/')[1]
+      return title.charAt(0).toUpperCase() + title.slice(1)
+    },
+  },
+  methods: {
+    async copy() {
+      this.showCopied = true
+      setTimeout(() => (this.showCopied = false), 600)
+      await navigator.clipboard.writeText(this.link.link)
+    },
+  },
 }
 </script>
 

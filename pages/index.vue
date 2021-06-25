@@ -17,15 +17,18 @@ import Links from '~/components/links.vue'
 
 export default {
   components: { AddLink, AddGroup, Groups, Links },
-  // methods: {
-  //   ...mapActions({
-  //     fetchGroupsData: 'groups/getGroups',
-  //     fetchLinksData: 'links/fetchData',
-  //   }),
-  // },
-  // async fetch() {
-  //   this.fetchGroupsData()
-  //   this.fetchLinksData()
-  // },
+  head: {
+    title: 'Dashboard page',
+  },
+  methods: {
+    ...mapActions({
+      fetchGroupsData: 'groups/getGroups',
+      fetchLinksData: 'links/fetchData',
+    }),
+  },
+  async fetch() {
+    await this.fetchGroupsData()
+    await this.fetchLinksData()
+  },
 }
 </script>

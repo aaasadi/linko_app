@@ -8,16 +8,24 @@ export const mutations = {
 
 export const actions = {
   async fetchData({ commit }) {
-    const data = await this.$axios.$get('/links')
-    commit('setLinks', data)
+    try {
+      const data = await this.$axios.$get('/links')
+      commit('setLinks', data)
+    } catch (err) {
+      // handle error
+    }
   },
   async createLink({ dispatch }, data) {
     const { group, url, link } = data
-    const result = await this.$axios.$post(`/links/${group}`, {
-      slug: link,
-      url,
-    })
-    dispatch('fetchData')
-    return result
+    try {
+      await this.$axios.$post(`/links/${group}`, {
+        slug: link,
+        url,
+      })
+      dispatch('fetchData')
+      dispatch('groups/fetchData')
+    } catch (err) {
+      // handle error
+    }
   },
 }
