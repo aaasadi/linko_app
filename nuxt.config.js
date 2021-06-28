@@ -40,6 +40,7 @@ export default {
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
     '@nuxtjs/auth-next',
+    'nuxt-i18n',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
@@ -109,5 +110,20 @@ export default {
 
   loading: {
     color: 'blue',
+  },
+
+  i18n: {
+    defaultLocale: 'en',
+    vueI18n: {
+      fallbackLocale: 'en',
+      messages: {
+        en: {
+          welcome: 'Welcome',
+        },
+        pr: {
+          welcome: 'خوش آمدید',
+        },
+      },
+    },
   },
 }

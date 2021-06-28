@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{ $t('welcome') }}
     <add-link />
     <add-group />
     <groups />

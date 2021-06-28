@@ -17,6 +17,7 @@
     "@nuxtjs/pwa": "^3.3.5",
     "core-js": "^3.9.1",
     "nuxt": "^2.15.3",
+    "nuxt-i18n": "^6.27.2",
     "vee-validate": "^3.4.10"
   },
   "devDependencies": {
